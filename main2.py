@@ -35,15 +35,14 @@ class outputs:
             outputs.par_out = True  # если в ходе программы данная функция была выхвана хоть один раз, и при этом был создан файл с параметрами, то в дальнейшем параметры будут вноситься в этот файл с концеа, а не перезаписываться
         myfile.close()
 
-
+NUM_Of_COL = 14
 fileNames = [ 'data_for_plotting2.csv' ]
-fileColNums = {'data_for_plotting2.csv' : (0 , 8) }
+fileColNums = {'data_for_plotting2.csv' : (0 , NUM_Of_COL) }
 X_data = []
 Y_data = []
 
-NUM_Of_COL = 8
 
-for i in range(4):
+for i in range(int(NUM_Of_COL/2)):
     X_data.append([])
     Y_data.append([])
 
@@ -67,13 +66,28 @@ for filename in fileNames:
 
             rowNum += 1
 
-
-Y_max = []
-for i in range(len(Y_data)):
-    Y_max.append(max(Y_data[i]))
-
+print(len(Y_data[3]))
 
 for j in range(len(Y_data)):
+    for i in range(len(Y_data[j])):
+        if j == 2:
+            if not(i >= len(Y_data[2]) or i >= len(Y_data[5])):
+                Y_data[j][i] = Y_data[j][i] * Y_data[5][i] # корректировка флуоресценции
+        # if j == 3:
+        #     if not i%2:
+        #         if not(i >= len(Y_data[3]) or 2*i >= len(Y_data[6])):
+        #             Y_data[3][i] = Y_data[3][i] * Y_data[5][i*2] # корректировка фосфоресценции
+
+
+Y_max = []
+for i in range(len(Y_data) - 2 ):
+    Y_max.append(max(Y_data[i]))
+    # ветвление для замедленной флуоресценции, нормировка на 0.5
+    if (i == 4):
+        Y_max[i] *= 2
+
+
+for j in range(len(Y_data) - 2):
     for i in range(len(Y_data[j])):
         Y_data[j][i] = (Y_data[j][i]) / Y_max[j]
 
@@ -83,6 +97,7 @@ resultDelFluor = sing_exp_model.fit(Y_data[0],
                                     t=X_data[0],
                                     a=1,
                                     tau1=1)
+
 
 
 resultPhos = sing_exp_model.fit(Y_data[1],
@@ -111,13 +126,13 @@ ax.yaxis.set_ticks_position('left')
 ax.xaxis.set_ticks_position('bottom')
 
 #plt.title('         Кинетические кривые затухания фосфоресценции  ' + '\n' + '     и замедленной  флуоресценции тройных комплексов')
-plt.plot(X_data[0], Y_data[0]) #флуоресценция
-plt.plot(X_data[1], Y_data[1]) #фосфоресценция
+plt.plot(X_data[0], Y_data[0], 'k-') #флуоресценция
+plt.plot(X_data[1], Y_data[1], 'k--') #фосфоресценция
 plt.axis([0, 10, 0, 1])
 plt.xlabel("t, с", style='italic')
 #plt.ylabel("I, отн. ед.")
-plt.plot(X_data[0], resultDelFluor.best_fit, linewidth=0.5)
-plt.plot(X_data[1], resultPhos.best_fit, linewidth=0.5)
+#plt.plot(X_data[0], resultDelFluor.best_fit, linewidth=0.5)
+#plt.plot(X_data[1], resultPhos.best_fit, linewidth=0.5)
 plt.legend(loc='best')
 filename = "Phos_and_fluor_lifetimes" + ".png"
 plt.savefig(filename)
@@ -130,7 +145,8 @@ fig2 = plt.figure()
 axe = fig2.add_subplot(111)
 axe.text(355, 0.65, '1', style='italic')
 axe.text(550, 0.55, '2', style='italic')
-
+axe.text(340, 0.45, '3', style='italic')
+axe.text(325, 0.3, 'X50', style='italic')
 axe.text(300, 1.05, "I, отн. ед.",style='italic' )
 #axe.text(720, 0,  r'$\lambda$, нм', style='italic')
 
@@ -143,14 +159,19 @@ plt.axis([300, 700, 0, 1])
 plt.xlabel(r'$\lambda$, нм', style='italic')
 #plt.ylabel("I, отн. ед.")
 #plt.title('Спектры фосфоресценции и замедленной ' + '\n' + 'флуоресценции')
-plt.plot(X_data[2], Y_data[2], 'g-') #флуоресценция
-plt.plot(X_data[3], Y_data[3], 'b-') #фосфоресценция
+plt.plot(X_data[2], Y_data[2], 'k-') #флуоресценция
+plt.plot(X_data[3], Y_data[3], 'k--') #фосфоресценция
+plt.plot(X_data[4], Y_data[4], 'k-.') #замедленная флуоресценция
 #plt.legend(loc='best')
 filename = "Phos_and_fluor" + ".png"
 plt.savefig(filename)
+plt.show()
 
-
-
+plt.figure(3)
+plt.plot(X_data[5], Y_data[5], 'r-')
+filename = "Corr curve" + ".png"
+plt.savefig(filename)
+plt.show()
 
 paramInf = []
 nameInf = ["Delayed Fluorescence","Phosphorescence"]

@@ -85,6 +85,7 @@ resultDelFluor = sing_exp_model.fit(Y_data[0],
                                     tau1=1)
 
 
+
 resultPhos = sing_exp_model.fit(Y_data[1],
                                     t=X_data[1],
                                     a=1,
@@ -116,8 +117,8 @@ plt.plot(X_data[1], Y_data[1]) #фосфоресценция
 plt.axis([0, 10, 0, 1])
 plt.xlabel("t, с", style='italic')
 #plt.ylabel("I, отн. ед.")
-plt.plot(X_data[0], resultDelFluor.best_fit, linewidth=0.5)
-plt.plot(X_data[1], resultPhos.best_fit, linewidth=0.5)
+#plt.plot(X_data[0], resultDelFluor.best_fit, linewidth=0.5)
+#plt.plot(X_data[1], resultPhos.best_fit, linewidth=0.5)
 plt.legend(loc='best')
 filename = "Phos_and_fluor_lifetimes" + ".png"
 plt.savefig(filename)
@@ -139,7 +140,7 @@ axe.spines['top'].set_visible(False)
 axe.yaxis.set_ticks_position('left')
 axe.xaxis.set_ticks_position('bottom')
 
-plt.axis([300, 700, 0, 1])
+plt.axis([300, 400, 0, 0.05])
 plt.xlabel(r'$\lambda$, нм', style='italic')
 #plt.ylabel("I, отн. ед.")
 #plt.title('Спектры фосфоресценции и замедленной ' + '\n' + 'флуоресценции')
